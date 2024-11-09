@@ -10,7 +10,7 @@ from openai import OpenAI
 
 
 # Set OpenAI API key
-os.environ["OPENAI_API_KEY"] =  "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"
+os.environ["OPENAI_API_KEY"] =  "##############"
 client=OpenAI()
 
 # Function to generate a summary
