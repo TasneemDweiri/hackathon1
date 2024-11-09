@@ -9,7 +9,7 @@ import csv
 from openai import OpenAI
 
 
-os.environ["OPENAI_API_KEY"] =  "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"
+os.environ["OPENAI_API_KEY"] =  "############"
 client = OpenAI()
 
 
