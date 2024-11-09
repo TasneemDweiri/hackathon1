@@ -271,7 +271,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Title
-st.markdown('<div class="header-title">AI Study Helper</div>', unsafe_allow_html=True)
+st.markdown('<div class="header-title">Study buddy</div>', unsafe_allow_html=True)
 
 # Sidebar with a radio button to select application mode
 st.sidebar.markdown('<div class="sidebar-title">Select Application</div>', unsafe_allow_html=True)
