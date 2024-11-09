@@ -9,11 +9,11 @@ import csv
 from openai import OpenAI
 
 
-os.environ["OPENAI_API_KEY"] =  "############"
-client = OpenAI()
+# Set OpenAI API key
+os.environ["OPENAI_API_KEY"] =  "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"
+client=OpenAI()
 
-
-# generate a summary
+# Function to generate a summary
 def generate_summary(extracted_text):
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
@@ -27,7 +27,7 @@ def generate_summary(extracted_text):
     return response.choices[0].message.content.strip()
 
 
-# generate a study plan
+# Function to generate a study plan
 def generate_study_plan(extracted_text):
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
@@ -49,7 +49,7 @@ def generate_study_plan(extracted_text):
     return response.choices[0].message.content.strip()
 
 
-# generate flashcards
+# Function to generate flashcards
 def generate_flashcards(extracted_text):
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
@@ -66,7 +66,7 @@ def generate_flashcards(extracted_text):
     return response.choices[0].message.content.strip()
 
 
-# Reading files functions
+# Read file functions
 def read_pdf(file):
     with pdfplumber.open(file) as pdf:
         return "".join(page.extract_text() or "" for page in pdf.pages)
@@ -271,7 +271,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Title
-st.markdown('<div class="header-title">Study buddy</div>', unsafe_allow_html=True)
+st.markdown('<div class="header-title">Study Buddy</div>', unsafe_allow_html=True)
 
 # Sidebar with a radio button to select application mode
 st.sidebar.markdown('<div class="sidebar-title">Select Application</div>', unsafe_allow_html=True)
@@ -316,13 +316,29 @@ elif app_mode == "FlashCards":
     file = st.file_uploader("Upload a file for flashcards", type=["pdf", "docx", "txt"])
 
     if file:
-        text = read_pdf(file) if file.type == "application/pdf" else read_docx(file) if file.type.endswith(
-            "docx") else read_txt(file)
+        text = read_pdf(file) if file.type == "application/pdf" else read_docx(file) if file.type.endswith("docx") else read_txt(file)
 
         if st.button("Generate Flashcards"):
             with st.spinner("Generating flashcards..."):
-                flashcards = generate_flashcards(text)
-                st.text_area("Flashcards", flashcards, height=300)
+                flashcards_text = generate_flashcards(text)
+                flashcards = [
+                    {"question": line.split(": ", 1)[0], "answer": line.split(": ", 1)[1]}
+                    for line in flashcards_text.split("\n") if ": " in line
+                ]
+
+                # Create CSV in memory
+                output = io.StringIO()
+                writer = csv.writer(output)
+                writer.writerow(["Question", "Answer"])
+                for flashcard in flashcards:
+                    writer.writerow([flashcard["question"], flashcard["answer"]])
+
+                st.download_button(
+                    label="Download Flashcards as CSV",
+                    data=output.getvalue(),
+                    file_name="flashcards.csv",
+                    mime="text/csv"
+                )
 
 # Footer
 st.markdown('<div class="footer">© 2024 AI Study Helper | All Rights Reserved</div>', unsafe_allow_html=True)
